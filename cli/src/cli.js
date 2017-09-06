@@ -7,37 +7,48 @@ export const cli = vorpal()
 
 let username
 let server
+let host
+let port
 
 cli
-  .delimiter(cli.chalk['yellow']('ftd~$'))
+  .delimiter(cli.chalk['yellow']('ftd~$'))  //preMessage, cli talk to command Line
 
 cli
-  .mode('connect <username>')
-  .delimiter(cli.chalk['green']('connected>'))
+  .mode('connect <username> <host> <port>')
+  .delimiter(cli.chalk['green']('connected>'))  //preMessage
   .init(function (args, callback) {
     username = args.username
-    server = connect({ host: 'localhost', port: 8080 }, () => {
+    host = args.host
+    port = args.port
+    server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
 
-    server.on('data', (buffer) => {
-      this.log(Message.fromJSON(buffer).toString())
+    server.on('data', (buffer) => {                       //Socket listener
+      this.log(Message.fromJSON(buffer).toString())       // Write content of message to console
     })
 
     server.on('end', () => {
       cli.exec('exit')
     })
   })
-  .action(function (input, callback) {
-    const [ command, ...rest ] = words(input)
-    const contents = rest.join(' ')
+  .action(function (input, callback) {     //Slushaet action v cli
+    const [ command, ...rest ] = words(input)   //chitaet vvedennye dannye izvestnuyu commandu i message
+    const contents = rest.join(' ')       //Sozdaet message, razdelyaet ego na slova
 
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    } else {
+
+//---------------
+   /* } else if(command === 'broadcast'){
+      server.write(new Message())*/
+    
+    
+    
+    }else{
       this.log(`Command <${command}> was not recognized`)
     }
 

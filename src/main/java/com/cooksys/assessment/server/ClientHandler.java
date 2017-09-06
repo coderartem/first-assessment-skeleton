@@ -37,16 +37,23 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
+						String resp = mapper.writeValueAsString("h");
+						writer.write("timestamp "+ message.getUsername()+" has connected");
+						writer.flush();
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
 						this.socket.close();
 						break;
 					case "echo":
+						//System.out.println(message.getUsername());
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
-						String response = mapper.writeValueAsString(message);
+						String response = mapper.writeValueAsString(message);  // transform message from obj to JSON format
+						//System.out.println(response);
 						writer.write(response);
 						writer.flush();
+						break;
+					case "":
 						break;
 				}
 			}
