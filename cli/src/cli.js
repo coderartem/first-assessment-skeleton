@@ -10,6 +10,8 @@ let server
 let host
 let port
 
+let cmmnd;
+
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))  //preMessage, cli talk to command Line
 
@@ -26,7 +28,9 @@ cli
     })
 
     server.on('data', (buffer) => {                       //Socket listener
-      this.log(Message.fromJSON(buffer).toString())       // Write content of message to console
+      this.log(Message.fromJSON(buffer).toString());
+     // this.log(cli.chalk.red(Message.fromJSON(buffer).toString()))       // Write content of message to console
+     
     })
 
     server.on('end', () => {
@@ -41,21 +45,30 @@ cli
       server.end(new Message({ username, command }).toJSON() + '\n')
 
     } else if (command === 'echo') {
+      cmmnd = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
 
 //---------------
     } else if(command === 'broadcast'){
+      cmmnd = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    
-    } else if(command === '@'){
-      console.log(username)
 
     }else if(command === 'users'){
-      server.write(new Message({username, command, contents}).toJSON() + '\n')  
+      cmmnd = command;
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')  
+    
+    } else if(input[0] === "@"){
+      cmmnd = command;
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
 
-      
+    }else if(cmmnd){
+      let msg = command.concat(' ',contents);
+      server.write(new Message({ username, command: cmmnd, contents: msg }).toJSON() + '\n')
 
+
+    //-------------------
     }else{
+      console.log(cmmnd)
       this.log(`Command <${command}> was not recognized`)
     }
 

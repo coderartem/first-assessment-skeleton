@@ -21,7 +21,7 @@ public class Server implements Runnable {
 	private ExecutorService executor;
 	
 	
-	//private static PrintWriter pW;//
+	//private static PrintWriter pW;
 	static Map<String, PrintWriter> users;//
 	
 	public Server(){//
@@ -56,11 +56,7 @@ public class Server implements Runnable {
 	
 	
 	public void addUser(String name, PrintWriter pW){//
-		System.out.println("in add func");
 		users.put(name, pW);
-		for (String n :users.keySet()){
-			System.out.println(n);
-		}
 		
 	}
 	

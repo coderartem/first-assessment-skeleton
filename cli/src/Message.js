@@ -1,3 +1,5 @@
+
+
 export class Message {
   static fromJSON (buffer) {
     return new Message(JSON.parse(buffer.toString()))
@@ -19,6 +21,22 @@ export class Message {
   }
 
   toString () {
-    return this.timestamp + " " + '<' + this.username + '>' + " " +  this.contents
+   /* let clr;
+    switch (this.command){
+      case 'echo':
+      clr="\x1b[34m%s\x1b[0m";
+      break;
+      case 'users':
+      clr="\x1b[36m%s\x1b[0m";
+      break;
+      case 'broadcast':
+      clr="\x1b[32m%s\x1b[0m";
+      break;
+      default:
+      clr="\x1b[37m%s\x1b[0m";
+      break;
+    }*/
+
+    return /*clr + ',' + */this.timestamp + " " + '<' + this.username + '>' + " " +  this.contents
   }
 }
