@@ -35,7 +35,9 @@ public class ClientHandler implements Runnable {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
+			OUTER:
 			while (!socket.isClosed()) {
+				
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 				message.setTimestamp(timeNow());
@@ -45,11 +47,23 @@ public class ClientHandler implements Runnable {
 				
 					case "connect":
 						
-						srv.addUser(message.getUsername(),writer);
+						for (String x : Server.users.keySet()){
+							if(x.equals(message.getUsername())){
+								message.setContents("Name is unavaliable, please choose another one");
+								message.setUsername("");
+								message.setCommand("disconnect");;
+								writer.write(mapper.writeValueAsString(message));
+								writer.flush();
+								this.socket.close();
+								break;
+							}
+						}
 						
-						log.info("user <{}> connected", message.getUsername());
-						message.setContents(" has connected");
-						toEverybody(writer,mapper,message);
+							srv.addUser(message.getUsername(),writer);
+							log.info("user <{}> connected", message.getUsername());
+							message.setContents(" has connected");
+							toEverybody(writer,mapper,message);
+						
 						break;
 						
 					case "disconnect":
@@ -92,7 +106,7 @@ public class ClientHandler implements Runnable {
 								message.setContents("(whisper): " + message.getContents());
 								prwt.write(mapper.writeValueAsString(message));
 								prwt.flush();
-								
+								break;
 							}
 						}
 						break;

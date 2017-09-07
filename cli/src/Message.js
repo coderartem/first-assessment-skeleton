@@ -28,16 +28,20 @@ export class Message {
       clr='blue';
       break;
       case 'users':
-      clr='yellow';
+      clr='magenta';
       break;
       case 'broadcast':
       clr='green';
       break;
+      case 'connect':
+      case 'disconnect':
+      clr = 'red';
+      break;
       default:
-      clr='red';
+      clr='cyan';
       break;
     }
 
-    return this.timestamp + " " + '<' + this.username + '>' + " " +  cli.chalk[clr](this.contents)
+    return this.timestamp + " " + '<' + cli.chalk['magenta'](this.username) + '>' + " " +  cli.chalk[clr](this.contents)
   }
 }
