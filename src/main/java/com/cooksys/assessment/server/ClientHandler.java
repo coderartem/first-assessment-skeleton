@@ -43,7 +43,7 @@ public class ClientHandler implements Runnable {
 				//Setting a timestamp in all incoming messages before to send them out
 				message.setTimestamp(timeNow());
 				
-				//choose action based on command
+				//Choose action based on command
 				switch (message.getCommand()) {
 				
 				//Connect new user to the chat
@@ -70,6 +70,7 @@ public class ClientHandler implements Runnable {
 						break;
 						
 						//Disconnect user from the chat, delete it's name and printer from users Map collection on server
+					case "exit":
 					case "disconnect":
 							log.info("user <{}> disconnected", message.getUsername());
 							message.setContents(" has disconnected");
@@ -81,7 +82,7 @@ public class ClientHandler implements Runnable {
 						//Handle echo messages
 					case "echo":
 							message.setContents("(echo): " + message.getContents());
-							String response = mapper.writeValueAsString(message);  // transform message from obj to JSON format
+							String response = mapper.writeValueAsString(message);  
 							writer.write(response);
 							writer.flush();
 						break;
@@ -102,32 +103,31 @@ public class ClientHandler implements Runnable {
 					case "broadcast":
 							message.setContents("(all): " + message.getContents());
 							toEverybody(writer,mapper,message);
-							message.setContents("sent to " + message.getCommand());
-							message.setCommand("service");
-							message.setUsername("YOU");
-							writer.write(mapper.writeValueAsString(message));
-							writer.flush();
+							serviceMessage(writer,mapper,message, true);
 						break;
 						
 						//Looking for specific user in Map of users to establish direct messaging
 						//and sending confirmation to sender
 					default:
+						boolean userExist = false;
 							for(String names : Server.users.keySet()){
 								if(message.getCommand().equals(names)){
 									PrintWriter prwt = Server.users.get(names);
 									message.setContents("(whisper): " + message.getContents());
 									prwt.write(mapper.writeValueAsString(message));
 									prwt.flush();
-									message.setContents("sent to " + message.getCommand());
-									message.setCommand("service");
-									message.setUsername("YOU");
-									writer.write(mapper.writeValueAsString(message));
-									writer.flush();
+									userExist = true;
+									if(writer!=prwt){
+										serviceMessage(writer,mapper,message, userExist);
+									}
 								break;
 							}
 						}
+							//Action if there is no such user in the chat
+							if(!userExist){
+								serviceMessage(writer,mapper,message, userExist);
+							}
 						break;
-						
 				}
 				
 			}
@@ -144,15 +144,38 @@ public class ClientHandler implements Runnable {
 	}
 	
 	//Use PrintWriters of all connected users to send a message to everybody
-	public void toEverybody(PrintWriter writer, ObjectMapper mapper, Message message) throws JsonProcessingException{
+	public void toEverybody(PrintWriter writer, ObjectMapper mapper, Message message) {
 		
-		for(PrintWriter wrt : Server.users.values() ){
-			if(wrt!=writer){
-			wrt.write(mapper.writeValueAsString(message));
-			wrt.flush();
+		try {
+			for(PrintWriter wrt : Server.users.values() ){
+				if(wrt!=writer){
+					wrt.write(mapper.writeValueAsString(message));
+					wrt.flush();
+				}
 			}
-		}
+		} catch (JsonProcessingException e) {
+				log.error("Something went wrong :/", e);
+		}	
+	}
+	
+	//Service messages for sender
+	public void serviceMessage(PrintWriter writer, ObjectMapper mapper, Message message, boolean userExist){
 		
+		try {
+			if(userExist){
+				message.setContents("sent to " + message.getCommand());
+				message.setUsername("YOU");
+			}else{
+				message.setContents("No such user in the chat, STOP to write to him!!!");
+				message.setUsername("WRONG USER NAME");
+			}
+			message.setCommand("service");
+			writer.write(mapper.writeValueAsString(message));
+			
+		} catch (JsonProcessingException e) {
+			log.error("Something went wrong :/", e);
+		}
+		writer.flush();
 	}
 
 }

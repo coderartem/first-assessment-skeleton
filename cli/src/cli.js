@@ -24,6 +24,7 @@ cli
     port = args.port
     server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
+      this.log(cli.chalk['yellow']("Hi there! Watch out, your entries are case sensitive!"))
       callback()
     })
 
@@ -33,7 +34,6 @@ cli
      
     })
 
-    //Console exit
     server.on('end', () => {
       cli.exec('exit')
     })
@@ -45,7 +45,7 @@ cli
     //List of actions based on command input
 
     if (command === 'disconnect') {
-      this.log("Disconnected")
+      this.log(cli.chalk['yellow']("Ciao !!!"))
       server.end(new Message({ username, command }).toJSON() + '\n')
 
     } else if (command === 'echo') {
