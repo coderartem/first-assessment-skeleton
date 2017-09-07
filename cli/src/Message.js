@@ -1,4 +1,5 @@
 
+import { cli } from './cli';
 
 export class Message {
   static fromJSON (buffer) {
@@ -21,22 +22,22 @@ export class Message {
   }
 
   toString () {
-   /* let clr;
+    let clr;
     switch (this.command){
       case 'echo':
-      clr="\x1b[34m%s\x1b[0m";
+      clr='blue';
       break;
       case 'users':
-      clr="\x1b[36m%s\x1b[0m";
+      clr='yellow';
       break;
       case 'broadcast':
-      clr="\x1b[32m%s\x1b[0m";
+      clr='green';
       break;
       default:
-      clr="\x1b[37m%s\x1b[0m";
+      clr='red';
       break;
-    }*/
+    }
 
-    return /*clr + ',' + */this.timestamp + " " + '<' + this.username + '>' + " " +  this.contents
+    return this.timestamp + " " + '<' + this.username + '>' + " " +  cli.chalk[clr](this.contents)
   }
 }

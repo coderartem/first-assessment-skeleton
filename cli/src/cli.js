@@ -28,8 +28,7 @@ cli
     })
 
     server.on('data', (buffer) => {                       //Socket listener
-      this.log(Message.fromJSON(buffer).toString());
-     // this.log(cli.chalk.red(Message.fromJSON(buffer).toString()))       // Write content of message to console
+      this.log(Message.fromJSON(buffer).toString());       // Write content of message to console
      
     })
 
