@@ -22,26 +22,38 @@ export class Message {
   }
 
   toString () {
-    let clr;
+    let textColor;
+    let backgroundColor;
+
+    //Choosing a text and background colors based on message type
     switch (this.command){
       case 'echo':
-      clr='blue';
+        backgroundColor = 'bgYellow';
+        textColor = 'blue';
       break;
       case 'users':
-      clr='magenta';
+        backgroundColor = 'bgBlack';
+        textColor = 'magenta';
       break;
       case 'broadcast':
-      clr='green';
+        backgroundColor = 'bgGreen';
+        textColor = 'red';
       break;
       case 'connect':
       case 'disconnect':
-      clr = 'red';
+        backgroundColor = 'bgBlack';
+        textColor = 'red';
+      break;
+      case 'service':
+        backgroundColor = 'bgBlack';
+        textColor = 'yellow';
       break;
       default:
-      clr='cyan';
+        backgroundColor = 'bgRed';
+        textColor = 'green';
       break;
     }
 
-    return this.timestamp + " " + '<' + cli.chalk['magenta'](this.username) + '>' + " " +  cli.chalk[clr](this.contents)
+    return this.timestamp + " " + '<' + cli.chalk['magenta'](this.username) + '>' + " " +  cli.chalk[backgroundColor](cli.chalk[textColor](this.contents));
   }
 }

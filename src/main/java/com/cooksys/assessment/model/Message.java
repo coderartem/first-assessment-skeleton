@@ -5,21 +5,8 @@ public class Message {
 	private String username;
 	private String command;
 	private String contents;
-	private String timestamp;
+	private String timestamp;  //Added timestamp to set it on server (in ClientHandler) and send it to other users with the message
 
-	
-
-	public Message() {
-		
-	}
-
-	public Message(String username, String command, String contents, String timestamp) {
-		super();
-		this.username = username;
-		this.command = command;
-		this.contents = contents;
-		this.timestamp = timestamp;
-	}
 	
 	public String getTimestamp() {
 		return timestamp;

@@ -6,8 +6,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -20,11 +18,9 @@ public class Server implements Runnable {
 	private int port;
 	private ExecutorService executor;
 	
+	static Map<String, PrintWriter> users;
 	
-	//private static PrintWriter pW;
-	static Map<String, PrintWriter> users;//
-	
-	public Server(){//
+	public Server(){
 		
 	}
 	
@@ -33,8 +29,8 @@ public class Server implements Runnable {
 		this.port = port;
 		this.executor = executor;
 		
+		//initializing collection of users connected to the chat
 		users = Collections.synchronizedMap(new HashMap<String,PrintWriter>());
-		
 	}
 
 	public void run() {
@@ -54,14 +50,9 @@ public class Server implements Runnable {
 		}
 	}
 	
-	
-	public void addUser(String name, PrintWriter pW){//
+	//Add new user and his PrintWriter to users Map collection
+	public synchronized void addUser(String name, PrintWriter pW){
 		users.put(name, pW);
 		
 	}
-	
-	public void toEverybody(){
-		
-	}
-
 }

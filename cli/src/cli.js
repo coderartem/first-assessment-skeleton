@@ -10,14 +10,14 @@ let server
 let host
 let port
 
-let cmmnd;
+let lastCommand;
 
 cli
-  .delimiter(cli.chalk['yellow']('ftd~$'))  //preMessage, cli talk to command Line
+  .delimiter(cli.chalk['yellow']('ftd~$'))  
 
 cli
   .mode('connect <username> <host> <port>')
-  .delimiter(cli.chalk['green']('connected>'))  //preMessage
+  .delimiter(cli.chalk['green']('connected>'))  
   .init(function (args, callback) {
     username = args.username
     host = args.host
@@ -27,47 +27,48 @@ cli
       callback()
     })
 
-    server.on('data', (buffer) => {                       //Socket listener
-      this.log(Message.fromJSON(buffer).toString());       // Write content of message to console
+    //Console reader
+    server.on('data', (buffer) => {                       
+      this.log(Message.fromJSON(buffer).toString());       
      
     })
 
+    //Console exit
     server.on('end', () => {
       cli.exec('exit')
     })
   })
-  .action(function (input, callback) {     //Slushaet action v cli
-    const [ command, ...rest ] = words(input)   //chitaet vvedennye dannye izvestnuyu commandu i message
-    const contents = rest.join(' ')       //Sozdaet message, razdelyaet ego na slova
+  .action(function (input, callback) {    
+    const [ command, ...rest ] = words(input)   
+    const contents = rest.join(' ')       
+
+    //List of actions based on command input
 
     if (command === 'disconnect') {
+      this.log("Disconnected")
       server.end(new Message({ username, command }).toJSON() + '\n')
 
     } else if (command === 'echo') {
-      cmmnd = command;
+      lastCommand = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
 
-//---------------
     } else if(command === 'broadcast'){
-      cmmnd = command;
+      lastCommand = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
 
     }else if(command === 'users'){
-      cmmnd = command;
+      lastCommand = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n')  
     
     } else if(input[0] === "@"){
-      cmmnd = command;
+      lastCommand = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
 
-    }else if(cmmnd){
+    }else if(lastCommand){
       let msg = command.concat(' ',contents);
-      server.write(new Message({ username, command: cmmnd, contents: msg }).toJSON() + '\n')
+      server.write(new Message({ username, command: lastCommand, contents: msg }).toJSON() + '\n')
 
-
-    //-------------------
     }else{
-      console.log(cmmnd)
       this.log(`Command <${command}> was not recognized`)
     }
 
