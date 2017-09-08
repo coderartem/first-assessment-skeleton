@@ -10,6 +10,14 @@ let server;
 let host;
 let port;
 let lastCommand;
+const validCommands =
+'  List of valid commands:'+'\n'+
+'    broadcast   - send message to everybody'+'\n'+
+'    cmnd        - list of valid commands'+'\n'+
+'    disconnect  - disconnect from the chat'+'\n'+
+'    echo        - send message back to yourself'+'\n'+
+'    users       - list of currently connected users '+'\n'+
+'    @username   - direct messaging';
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'));  
@@ -23,7 +31,7 @@ cli
     port = args.port;
     server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n');
-      this.log(cli.chalk['yellow']("Hi there! Watch out, your entries are case sensitive!"));
+      this.log(cli.chalk['yellow']("Hi there! Watch out, your entries are case sensitive!"+'\n'+validCommands));
       callback();
     })
 
@@ -50,12 +58,15 @@ cli
       lastCommand = command;
       server.write(new Message({ username, command, contents }).toJSON() + '\n');
 
-    }else if(lastCommand){
+    }else if (command === 'cmnd') {
+      this.log(cli.chalk['yellow'](validCommands));
+
+    }else if(lastCommand) {
       let msg = command.concat(' ',contents);
       server.write(new Message({ username, command: lastCommand, contents: msg }).toJSON() + '\n');
 
     }else{
-      this.log(`Command <${command}> was not recognized`);
+      this.log(cli.chalk['red'](`Command <${command}> was not recognized`)+'\n'+cli.chalk['yellow'](validCommands));
     }
 
     callback();
