@@ -48,7 +48,6 @@ public class ClientHandler implements Runnable {
 				
 				//Connect new user to the chat
 					case "connect":
-						
 						//Checking if new user's name already chosen 
 						for (String clientName : Server.users.keySet()){
 							if(message.getUsername().equals(clientName)){
@@ -60,20 +59,19 @@ public class ClientHandler implements Runnable {
 								break;
 							}
 						}
-						//Adding new user and his PrinteWriter to users Map on a server
+						//Adding new user and his PrintWriter to users Map on a server
 						if(message.getUsername()!=""){
 							server.addUser(message.getUsername(),writer);
 							log.info("user <{}> connected", message.getUsername());
-							message.setContents(" has connected");
+							message.setContents("has connected");
 							toEverybody(writer,mapper,message);
 						}
 						break;
 						
 						//Disconnect user from the chat, delete it's name and printer from users Map collection on server
-					case "exit":
 					case "disconnect":
 							log.info("user <{}> disconnected", message.getUsername());
-							message.setContents(" has disconnected");
+							message.setContents("has disconnected");
 							toEverybody(writer,mapper,message);
 							Server.users.remove(message.getUsername(), writer);
 							this.socket.close();
@@ -166,7 +164,7 @@ public class ClientHandler implements Runnable {
 				message.setContents("sent to " + message.getCommand());
 				message.setUsername("YOU");
 			}else{
-				message.setContents("No such user in the chat, STOP to write to him!!!");
+				message.setContents("No such user in the chat, STOP to write to him/her!!!");
 				message.setUsername("WRONG USER NAME");
 			}
 			message.setCommand("service");

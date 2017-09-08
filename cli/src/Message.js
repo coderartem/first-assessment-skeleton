@@ -10,7 +10,7 @@ export class Message {
     this.username = username
     this.command = command
     this.contents = contents
-    this.timestamp = timestamp
+    this.timestamp = timestamp //Added timestamp field to get time from server
   }
 
   toJSON () {
@@ -25,7 +25,7 @@ export class Message {
     let textColor;
     let backgroundColor;
 
-    //Choosing a text and background colors based on message type
+    //Choosing text and background colors based on message type
     switch (this.command){
       case 'echo':
         backgroundColor = 'bgYellow';
@@ -54,6 +54,6 @@ export class Message {
       break;
     }
 
-    return this.timestamp + " " + '<' + cli.chalk['magenta'](this.username) + '>' + " " +  cli.chalk[backgroundColor](cli.chalk[textColor](this.contents));
+    return this.timestamp + " " + '<' + cli.chalk['magenta'](this.username) + '>' + " " +  cli.chalk[backgroundColor](cli.chalk[textColor](" " + this.contents + " "));
   }
 }
